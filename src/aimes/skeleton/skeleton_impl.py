@@ -28,13 +28,12 @@ class Task(object):
 
     # --------------------------------------------------------------------------
     #
-    def __init__(self, taskid, task_type, task_mode, task_prof, processes, length, 
-                 read_buf, write_buf, inputlist, outputlist, interleave_option, mode):
+    def __init__(self, taskid, task_type, task_mode, processes, length, read_buf, write_buf, 
+                 inputlist, outputlist, interleave_option, mode):
 
         self.taskid            = taskid
         self.task_type         = task_type
         self.task_mode         = task_mode
-        self.task_prof         = task_prof
         self.processes         = processes
         self.length            = length
         self.read_buf          = read_buf
@@ -53,8 +52,8 @@ class Task(object):
     #
     def get_args(self):
 
-        s = " ".join ([self.task_type, task_mode, task_prof, self.processes, 
-                       self.length, self.read_buf, str(self.write_buf), 
+        s = " ".join ([self.task_type, task_mode, self.processes, self.length,
+                       self.read_buf, str(self.write_buf), 
                        str(len(self.inputlist)), str(len(self.outputlist)), 
                                self.interleave_option])
 
@@ -73,8 +72,8 @@ class Task(object):
     def get_command(self, stage) :
 
         s  = "task "
-        s += " ".join ([self.task_type, self.task_mode, self.task_prof, self.processes, 
-                        self.length, self.read_buf,  str(self.write_buf), 
+        s += " ".join ([self.task_type, self.task_mode, self.processes, self.length,
+                        self.read_buf,  str(self.write_buf), 
                         str(len(self.inputlist)), str(len(self.outputlist)), 
                         self.interleave_option])
 
@@ -109,8 +108,8 @@ class Stage():
 
     # --------------------------------------------------------------------------
     #
-    def __init__ (self, name, task_type, task_mode, task_prof, num_tasks, 
-                  length_para, processes, read_buf, write_buf, 
+    def __init__ (self, name, task_type, task_mode, num_tasks, length_para, 
+                  processes, read_buf, write_buf, 
                   input_per_task,  input_para,  input_task_mapping, 
                   output_per_task, output_para, interleave_option, 
                   iter_num, iter_stages, iter_sub, mode):
@@ -124,7 +123,6 @@ class Stage():
         self.name               = name
         self.task_type          = task_type
         self.task_mode          = task_mode
-        self.task_prof          = task_prof
         self.num_tasks          = int(num_tasks)
         self.length_para        = length_para
         self.processes          = processes
@@ -318,8 +316,7 @@ class Application(object):
         #initial task generation
         for stage in self.stagelist:
             for i in range(stage.num_tasks):
-                task = Task(stage.name+"_"+str(i), stage.task_type, stage.task_mode, 
-                            stage.task_prof, stage.processes, 0, 
+                task = Task(stage.name+"_"+str(i), stage.task_type, stage.task_mode, stage.processes, 0, 
                             stage.read_buf, stage.write_buf, [], [], 
                             stage.interleave_option, stage.mode)
                 stage.task_list.append(task)
@@ -606,12 +603,12 @@ class Application(object):
             line = lines.pop()
             m=re.match(r"Stage_Name\s*=\s*(?P<stage_name>\w+)", line)
             stage_name = m.group('stage_name')
-            #print("stage_name: %s" % stage_name)
+            print("stage_name: %s" % stage_name)
 
             line = lines.pop()
             m=re.match(r"Task_Type\s*=\s*(?P<task_type>.+)", line)
             task_type = m.group('task_type')    
-            #print("task_type: %s" % task_type)
+            print("task_type: %s" % task_type)
 
             line = lines.pop()
             m=re.match(r"Task_Mode\s*=\s*(?P<task_mode>.+)", line)
@@ -621,27 +618,19 @@ class Application(object):
                 task_mode = m.group('task_mode')    
             print("task_mode: %s" % task_mode)
 
-            if m:
-                line = lines.pop()
-            m=re.match(r"Task_Profile\s*=\s*(?P<task_prof>.+)", line)
-            if m:
-                task_prof = m.group('task_prof')    
-            else:
-                task_prof = 'none'
-            print("task_prof: %s" % task_prof)
-
-            if m:
-                line = lines.pop()
+           # if m:
+           #     line = lines.pop()
+            line = lines.pop()
             m=re.match(r"Num_Tasks\s*=\s*(?P<num_tasks>\d+)", line)
             num_tasks = m.group('num_tasks')    
-            #print("num_tasks: %s" % num_tasks)
+            print("num_tasks: %s" % num_tasks)
 
             line = lines.pop()
             m=re.match(r"Task_Length\s*=\s*(?P<distribution>\w+) (?P<parameter>.+)", line)
             distribution = m.group('distribution')
             parameter = m.group('parameter')
             lengthpara = [distribution, parameter]
-            #print("Task_Length: "+distribution+", "+parameter)
+            print("Task_Length: "+distribution+", "+parameter)
 
             line = lines.pop()
             m=re.match(r"Num_Processes\s*=\s*(?P<num_processes>\d+)", line)
@@ -740,8 +729,8 @@ class Application(object):
                 else:
                     lines.append(line)
 
-            stage = Stage(stage_name, task_type, task_mode, task_prof, num_tasks, 
-                          lengthpara, num_processes, read_buf, write_buf, 
+            stage = Stage(stage_name, task_type, task_mode, num_tasks, lengthpara,
+                          num_processes, read_buf, write_buf, 
                           input_file_each_task,  input_para,  input_task_mapping, 
                           output_file_each_task, output_para, interleave_option, 
                           iteration_num, iteration_stages, iteration_sub, self.mode)
@@ -936,7 +925,6 @@ class Application(object):
             s += '\n'
             s += "        string t_type = \""+stage.task_type+"\";\n"
             s += "        string t_mode = \""+stage.task_mode+"\";\n"
-            s += "        string t_prof = \""+stage.task_prof+"\";\n"
             s += "        int procs = "+str(stage.processes)+";\n"
             s += "        int read_buf = "+stage.read_buf+";\n"
             s += "        int write_buf = "+stage.write_buf+";\n"

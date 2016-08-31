@@ -603,12 +603,12 @@ class Application(object):
             line = lines.pop()
             m=re.match(r"Stage_Name\s*=\s*(?P<stage_name>\w+)", line)
             stage_name = m.group('stage_name')
-            #print("stage_name: %s" % stage_name)
+            print("stage_name: %s" % stage_name)
 
             line = lines.pop()
             m=re.match(r"Task_Type\s*=\s*(?P<task_type>.+)", line)
             task_type = m.group('task_type')    
-            #print("task_type: %s" % task_type)
+            print("task_type: %s" % task_type)
 
             line = lines.pop()
             m=re.match(r"Task_Mode\s*=\s*(?P<task_mode>.+)", line)
@@ -616,20 +616,21 @@ class Application(object):
                 task_mode = "time"
             else:
                 task_mode = m.group('task_mode')    
-            #print("task_mode: %s" % task_mode)
+            print("task_mode: %s" % task_mode)
 
-            if m:
-                line = lines.pop()
+           # if m:
+           #     line = lines.pop()
+            line = lines.pop()
             m=re.match(r"Num_Tasks\s*=\s*(?P<num_tasks>\d+)", line)
             num_tasks = m.group('num_tasks')    
-            #print("num_tasks: %s" % num_tasks)
+            print("num_tasks: %s" % num_tasks)
 
             line = lines.pop()
             m=re.match(r"Task_Length\s*=\s*(?P<distribution>\w+) (?P<parameter>.+)", line)
             distribution = m.group('distribution')
             parameter = m.group('parameter')
             lengthpara = [distribution, parameter]
-            #print("Task_Length: "+distribution+", "+parameter)
+            print("Task_Length: "+distribution+", "+parameter)
 
             line = lines.pop()
             m=re.match(r"Num_Processes\s*=\s*(?P<num_processes>\d+)", line)
